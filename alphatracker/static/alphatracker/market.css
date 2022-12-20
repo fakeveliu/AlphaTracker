@@ -1,0 +1,66 @@
+#market-page-name {
+    margin-top: 30vh;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    font-weight: bold;
+    font-size: 42px;
+    font-family: helvetica;
+}
+
+#market-search-input {
+    background-image: url('https://www.w3schools.com/css/searchicon.png');
+    background-position: 1% 50%; /* Position the search icon */
+    background-repeat: no-repeat; /* Do not repeat the icon image */
+    width: 100%;
+    font-size: 16px;
+    padding: 12px 20px 12px 40px;
+    /* border: 1px solid #ddd; Add a grey border */
+    /* margin-bottom: 12px; Add some space below the input */
+}
+
+#market-header-container {
+    display: grid;
+	grid-template-columns: auto auto;
+	background-color: white;
+    width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#market-header-name {
+    text-align: left;
+    margin: auto auto 5px 0;
+    font-weight: bold;
+    font-size: 42px;
+    font-family: helvetica;
+}
+
+#market-header-mydata {
+    margin: auto 0 5px auto;
+    text-align: left;
+    font-weight: bold;
+    font-size: 18px;
+    font-family: helvetica;
+}
+
+#market-info-container {
+    margin: 10px auto auto auto;
+    display: grid;
+    grid-template-columns: auto auto auto;
+	background-color: white;
+    width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.market-info-header {
+    text-align: left;
+    font-weight: bold;
+    font-size: 18px;
+    font-family: helvetica;
+}
+
+#market-amount-input {
+    width: 200px;
+}

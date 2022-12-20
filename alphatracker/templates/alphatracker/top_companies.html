@@ -1,0 +1,174 @@
+{% extends "alphatracker/base.html" %}
+
+{% block script_front %}
+{% load static %}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="{% static 'alphatracker/table_actions.js' %}" type="text/javascript"></script>
+<script src="{% static 'alphatracker/fetch_company.js' %}" type="text/javascript"></script>
+{% endblock %}
+
+{% block title %}
+Top Companies - AlphaTracker
+{% endblock %}
+
+{% block header %}
+<div class="page-header" style="margin-top: 80px;">
+  <div id="global-page-name" class="page-name">
+    AlphaTracker Company Database
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container theme-showcase" role="main">
+  <div id="navbar" class="navbar-collapse collapse" style="float:left; padding-left:0">
+    <form class="navbar-form" method="get" action="/" style="padding-left:0;">
+      <div class="form-group">
+        <input id="search-input" onkeyup="searchTable()" name="search" type="text" placeholder="Search for names..."
+          class="form-control">
+      </div>
+      <div class="form-group">
+        <input id="filter-from" class="filter form-control" type="date" style="color:#9b9b9b">
+        <input id="filter-to" class="filter form-control" type="date" style="color:#9b9b9b">
+      </div>
+    </form>
+  </div>
+
+  <div id="navbar" class="navbar-collapse collapse" style="float:right; padding-right:0">
+    <form class="navbar-form" autocomplete="off" action="fetch-company" method="post" style="padding-right:0">
+      <div class="form-group">
+        <div class="autocomplete" style="width:200px">
+          <input class="form-control" style="width:200px" id="company_input" name="input_company" type="text"
+            placeholder="Company">
+        </div>
+        <button type="submit" class="btn btn-primary">Fetch Company</button>
+      </div>
+      {% csrf_token %}
+    </form>
+    <div id="error" style="color:#d9534f; text-align:right">{{ error }}</div>
+  </div>
+
+  <!--table-->
+  <div class="row">
+    <div class="col-md-6" style="width: 1200px;">
+      <table class="table table-hover" id="table">
+        <thead>
+          <tr>
+            <th onclick="sortTable('name')">Name</th>
+            <th onclick="sortTable('est')">Establish Time</th>
+            <th onclick="sortTable('size')">Size</th>
+            <th onclick="sortTable('creator')">Created By</th>
+            <th onclick="sortTable('modified')">Modified Time</th>
+            <th onclick="sortTable('collected')">Collected Times</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="body">
+          {% for item in items %}
+          <tr>
+            <td>
+              <a href="#" data-toggle="popover" data-trigger="hover" title="{{ item.name }}" data-content="
+                <div>
+                    <p>Establish Time: {{ item.establish_time }}</p>
+                    <p>Size: {{ item.size }}</p>
+                    <a href=https://{{ item.account }}.com><i class='fa fa-dribbble'></i></a>
+                    <a href=https://twitter.com/{{ item.account }}><i class='fa fa-twitter'></i></a>
+                    <a href=https://www.linkedin.com/in/{{ item.account }}><i class='fa fa-linkedin'></i></a>
+                    <a href=https://www.facebook.com/{{ item.account }}><i class='fa fa-facebook'></i></a>
+                </div>
+                " data-html="true">{{ item.name }}</a>
+              {# <div>#}
+                {# <p>Establish Time: {{ item.establish_time }}</p>#}
+                {# <p>Size: {{ item.size }}</p>#}
+                {# </div>#}
+
+            </td>
+            <td>{{ item.establish_time | date:"m/d/Y" }}</td>
+            <td>{{ item.size }}</td>
+            {% if item.created_by %}
+            {% if request.user.username == item.created_by.username %}
+            <td>
+              <a class="btn btn-link" style="padding:0" href="{% url 'my_collection' %}">
+                {{ request.user.username }}
+              </a>
+            </td>
+            {% else %}
+            <td>
+              <a class="btn btn-link" style="padding:0" href="{% url 'other_collection' item.created_by.id %}">
+                {{ item.created_by.username }}
+              </a>
+            </td>
+            {% endif %}
+            {% else %}
+            <td>AlphaTracker</td>
+            {% endif %}
+            <td>{{ item.modified_time | date:"m/d/Y H:i"}}</td>
+            <td>{{ item.collected_times }}</td>
+            <td>
+              <div class="company-action-container">
+                <a href="{% url 'market-company' item.id %}" class="btn btn-info btn-xs" role="button">Trade</a>
+                {% if item in request.user.profile.collection.all %}
+                <a href="{% url 'uncollect-action' item.id %}" class="btn btn-danger btn-xs" role="button">Uncollect</a>
+                {% else %}
+                <a href="{% url 'collect-action' item.id %}" class="btn btn-success btn-xs" role="button">Collect</a>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+  $(document).ready(function () {
+    $('[data-toggle="popover"]').popover();
+  });
+</script>
+<script>
+  window.onload = () => {
+    topNavSetActive(1);
+    loadExternalCompanies();
+  }
+
+  // date filter
+  $(".filter").on("change", function () {
+    var from = $("#filter-from").val()
+    var to = $("#filter-to").val()
+    // console.log(from, to)
+    if (!from && !to) {
+      return
+    }
+    from = modify_date(from)
+    to = modify_date(to)
+    var table = document.getElementById("table")
+    var rows = table.rows
+    let tr = table.getElementsByTagName("tr")
+    for (i = 1; i < (rows.length); i++) {
+      var x = rows[i].getElementsByTagName("TD")[1]
+      date = modify_date(x.innerHTML)
+      console.log(from)
+      console.log(date)
+      var show = true
+      if (from && date < from) {
+        show = false
+      }
+      if (to && date > to) {
+        show = false
+      }
+      if (show == true) {
+        rows[i].style.display = ""
+      }
+      else {
+        rows[i].style.display = "none"
+      }
+    }
+  })
+</script>
+{% endblock %}

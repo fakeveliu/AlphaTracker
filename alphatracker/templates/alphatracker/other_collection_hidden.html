@@ -1,0 +1,50 @@
+{% extends "alphatracker/base.html" %}
+
+{% block script_front %}
+{% load static %}
+<script src="{% static 'alphatracker/table_actions.js' %}" type="text/javascript"></script>
+{% endblock %}
+
+{% block title %}
+{{profile.user.first_name}} {{profile.user.last_name }}'s Profile - AlphaTracker
+{% endblock %}
+
+{% block content %}
+<div class="column-container">
+  <div class="center" style="width:15vw; height: 100vh; background-color:darkgray">
+    <img style="border-radius: 50%; width: 50%; margin-top: 8em;" src="{{ profile.image }}" alt="Profile Image">
+    <div>
+      {% if profile.user in request.user.profile.following.all %}
+      <form action="{% url 'unfollow' profile.user.id %}" method="post">
+        {% csrf_token %}
+        <button id="id_unfollow" type="submit" class="btn btn-danger" style="margin-top: 20px; font-size: 24px">Unfollow</button>
+      </form>
+      {% else %}
+      <form action="{% url 'follow' profile.user.id %}" method="post">
+        {% csrf_token %}
+        <button id="id_follow" type="submit" class="btn btn-primary" style="margin-top: 20px; font-size: 24px">Follow</button>
+      </form>
+      {% endif %}
+    </div>
+    <div id="collection" class="profile-item-active" style="margin-top: 80px;">
+      <a href="">Collection</a>
+    </div>
+  </div>
+
+  <div class="container theme-showcase" style="margin-top: 80px;">
+    <div class="page-name">
+      {{profile.user.first_name}} {{profile.user.last_name }}'s Collection
+    </div> 
+    <div>
+      You do not have access to {{profile.user.first_name}} {{profile.user.last_name }}'s Collection.
+    </div>
+  </div>
+{% endblock %}
+
+{% block script %}
+<script>
+  window.onload = () => {
+    topNavSetActive(3)
+  }
+</script>
+{% endblock %}

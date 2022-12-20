@@ -1,0 +1,75 @@
+{% extends "alphatracker/base.html" %}
+
+{% block title %}
+Debug - AlphaTracker
+{% endblock %}
+
+{% block header %}
+<div class="page-header" style="margin-top: 80px;">
+  <div id="global-page-name" class="page-name">
+    Fake Twitter Database
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="center">
+    <h3>Twitter Companies</h3>
+    {% for tc in twitter_companies %}
+        <div>{{ tc.name }} - Investors:
+            {% for inv in tc.investors.all %}
+            {{ inv.name }}, 
+            {% endfor %}
+        </div>
+    {% endfor %}
+
+    <h3>AlphaTracker Companies</h3>
+    {% for ac in alphatracker_companies %}
+        <div>{{ ac.name }} - Investors:
+            {% for inv in ac.investors.all %}
+            {{ inv.name }}, 
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+
+  window.onload = topNavSetActive(4);
+
+  $(".filter").on("change", function () {
+    var from = $("#filter-from").val()
+    var to = $("#filter-to").val()
+    // console.log(from, to)
+    if (!from && !to) {
+      return
+    }
+    from = modify_date(from)
+    to = modify_date(to)
+    var table = document.getElementById("table")
+    var rows = table.rows
+    let tr = table.getElementsByTagName("tr")
+    for (i = 1; i < (rows.length); i++) {
+      var x = rows[i].getElementsByTagName("TD")[1]
+      date = modify_date(x.innerHTML)
+      console.log(from)
+      console.log(date)
+      var show = true
+      if (from && date < from) {
+        show = false
+      }
+      if (to && date > to) {
+        show = false
+      }
+      if (show == true) {
+        rows[i].style.display = ""
+      }
+      else {
+        rows[i].style.display = "none"
+      }
+    }
+  })
+</script>
+{% endblock %}

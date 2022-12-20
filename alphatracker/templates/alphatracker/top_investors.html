@@ -1,0 +1,58 @@
+{% extends "alphatracker/base.html" %}
+
+{% block script_front %}
+{% load static %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="../../static/alphatracker/top_investors.css">
+{% endblock %}
+
+{% block title %}
+Top Investors - AlphaTracker
+{% endblock %}
+
+
+{% block header %}
+<div class="page-header" style="margin-top: 80px;">
+  <div id="global-page-name" class="page-name">
+    Top Investors
+  </div>
+</div>
+{% endblock %}
+
+
+{% block content %}
+<div class="grid-container">
+      {% for item in profiles %}
+          <div class="card">
+            <img id="id_user_picture" src="{{ item.image }}" alt="Profile Image" style="border-radius:50%; width:40%">
+            <h1><a>{{ item.user.first_name }} {{ item.user.last_name }}</a></h1>
+            <p class="title">Visibility: {{ item.visibility }}</p>
+            <p>Email: {{ item.user.email }}</p>
+            <p>Date joined: {{ item.user.date_joined | date:"m/d/Y" }}</p>
+            <p>Number of Following: {{ item.following.count }}</p>
+            <p>Number of Followers: {{ item.follower.count }}</p>
+{#                following list: #}
+{#                {% for item2 in item.profile.following.all %}#}
+{#                <a class="btn btn-link" style="padding:0" href="{% url 'other_collection' item2.id %}">#}
+{#                    {{ item2.username }}#}
+{#                </a>#}
+{#                {% endfor %}#}
+              <div>
+                  <a><i class="fa fa-dribbble"></i></a>
+                  <a><i class="fa fa-twitter"></i></a>
+                  <a><i class="fa fa-linkedin"></i></a>
+                  <a><i class="fa fa-facebook"></i></a>
+              </div>
+              <div>
+                <a href="{% url 'other_collection' item.user.id %}" class="btn btn-info btn-xs" role="button">View</a>
+              </div>
+          </div>
+      {%  endfor %}
+  </div>
+{% endblock %}
+
+{% block script %}
+<script>
+  window.onload = topNavSetActive(2);
+</script>
+{% endblock %}

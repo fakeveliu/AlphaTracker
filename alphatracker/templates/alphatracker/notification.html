@@ -1,0 +1,91 @@
+{% extends "alphatracker/base.html" %}
+
+{% block title %}
+Notifications
+{% endblock %}
+
+{% block header %}
+<div class="page-header" style="margin-top: 80px;">
+    <div id="global-page-name" class="page-name">
+        Notifications
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div id="notification" style="padding-left: 30px;">
+    {% for notification in new_notifications %}
+    {% if notification.post %}
+    <div>
+        {% if notification.post.category == "News" %}
+        <i class="fa-solid fa-globe"></i>
+        {% elif notification.post.category == "Blog" %}
+        <i class="fa-solid fa-blog"></i>
+        {% elif notification.post.category == "General" %}
+        <i class="fa-regular fa-file"></i>
+        {% elif notification.post.category == "Insights" %}
+        <i class="fa-solid fa-magnifying-glass"></i>
+        {% endif %}
+        <a class="btn btn-link" style="padding:0" href="{% url 'community' notification.post.id %}">
+            {{notification.post.title}}
+        </a>
+        {{ notification.message }}
+        <a class="btn btn-link" style="padding:0" href="{% url 'other_collection' notification.sender.id %}">
+            {{notification.sender}}
+        </a> on {{notification.time}}
+    </div>
+    {% else %}
+    <div>
+        <i class="fa-solid fa-flag"></i>
+        {{ notification.message }}
+        <a class="btn btn-link" style="padding:0" href="{% url 'other_collection' notification.sender.id %}">
+            {{notification.sender}}
+        </a> on {{notification.time}}
+    </div>
+    {% endif %}
+    {% endfor %}
+    <h3>History</h3>
+    {% for notification in old_notifications %}
+    {% if notification.post %}
+    <div>
+        {% if notification.post.category == "News" %}
+        <i class="fa-solid fa-globe"></i>
+        {% elif notification.post.category == "Blog" %}
+        <i class="fa-solid fa-blog"></i>
+        {% elif notification.post.category == "General" %}
+        <i class="fa-regular fa-file"></i>
+        {% elif notification.post.category == "Insights" %}
+        <i class="fa-solid fa-magnifying-glass"></i>
+        {% endif %}
+        <a class="btn btn-link" style="padding:0" href="{% url 'community' notification.post.id %}">
+            {{notification.post.title}}
+        </a>
+        {{ notification.message }}
+        <a class="btn btn-link" style="padding:0" href="{% url 'other_collection' notification.sender.id %}">
+            {{notification.sender}}
+        </a> on {{notification.time}}
+    </div>
+    {% else %}
+    <div>
+        <i class="fa-solid fa-flag"></i>
+        {{ notification.message }}
+        <a class="btn btn-link" style="padding:0" href="{% url 'other_collection' notification.sender.id %}">
+            {{notification.sender}}
+        </a> on {{notification.time}}
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+  $(document).ready(function () {
+    $('[data-toggle="popover"]').popover();
+  });
+</script>
+<script>
+  window.onload = topNavSetActive(6);
+
+</script>
+{% endblock %}

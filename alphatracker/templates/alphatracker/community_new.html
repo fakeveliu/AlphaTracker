@@ -1,0 +1,179 @@
+{% extends "alphatracker/base.html" %}
+
+{% block script_front %}
+{% load static %}
+<link href="{% static 'alphatracker/community.css' %}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block title %}
+Community - AlphaTracker
+{% endblock %}
+
+{% block content %}
+<div class="page-header" style="margin-top: 80px;">
+  <div id="community-page-name" class="page-name">
+    AlphaTracker Community
+  </div>
+</div>
+
+<div class="post-button">
+  <button id="new-post-btn" class="btn btn-success btn-xs" role="button">
+    <i class="fa-solid fa-plus"></i> New Post
+  </button>
+</div>
+
+<div class="card">
+  <div class="products">
+    {% for item in items %}
+    <div class="product">
+      <div class="title">{{ item.title }}</div>
+      <div class="info-container">
+        <div style="text-align:left">
+          {% if request.user.username == item.author.username %}
+          <button id="delete" onclick="deletePost({{item.id}})">Delete</button>
+          {% endif %}
+        </div>
+        <div class="description">{{ item.content }}</div>
+      </div>
+      {% endfor %}
+      <div id="new-post-card" class="post-card">
+        <div id="error" style="color:#d9534f; text-align:center">{{ error }}</div>
+        <form action="submit_post" method="POST">
+          <div class="form-group">
+            <label for="Post-Title">Title</label>
+            <input type="text" class="form-control" name="title" id="Post-Title" style="width: 100%">
+          </div>
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select name="category" id="category">
+              <option class="option_choice" id="Blog" value="Blog">Blog</option>
+              <option class="option_choice" id="News" value="News">News</option>
+              <option class="option_choice" id="Insights" value="Insights">Insights</option>
+              <option class="option_choice" id="General" value="General">General</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="Post-Context">Content</label>
+            <textarea class="form-control" name="content" id="Post-Content"></textarea>
+          </div>
+          <div class="form-group">
+            <div class="center">
+              <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+            <div class="form-group">
+              <label for="category">Category</label>
+              <select name="category" id="category">
+                <option class="option_choice" id="Blog" value="Blog">Blog</option>
+                <option class="option_choice" id="News" value="News">News</option>
+                <option class="option_choice" id="Insights" value="Insights">Insights</option>
+                <option class="option_choice" id="General" value="General">General</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="Post-Context">Content</label>
+              <textarea class="form-control" name="content" id="Post-Content"></textarea>
+            </div>
+            <div class="form-group">
+              <div class="center">
+                <button type="submit" class="btn btn-success">Submit</button>
+              </div>
+            </div>
+            {% csrf_token %}
+        </form>
+      </div>
+    </div>
+    <div class="footer">
+      <a class="btn" id="prev" href="#"><i class="fa-solid fa-angles-left"></i></a>
+      <a class="btn" id="next" href="#"><i class="fa-solid fa-angles-right"></i></a>
+    </div>
+  </div>
+  {% endblock %}
+
+  {% block script %}
+  <script>
+    const deletePostURL = "{% url 'delete-post' %}"
+
+    window.onload = topNavSetActive(3);
+
+    $(document).ready(function () {
+      var posting = false;
+
+      function setDefaultHeight() {
+        $('.products').css({ height: "450px" });
+      }
+      function setNewPostHeight() {
+        $('.products').css({ height: "500px" });
+      }
+
+      var productItem = $('.product');
+      var productCurrentItem = productItem.last();
+      var newPostItem = $('#new-post-card');
+      var error = document.getElementById("error");
+      if (error.innerHTML == '') {
+        productCurrentItem.addClass('active');
+        setDefaultHeight();
+      } else { // new post has error, stay in new post state
+        posting = true;
+        renderPostCard();
+      }
+
+      function renderPostCard() {
+        if (!posting) {
+          $('.footer').css("visibility", "visible");
+          $('.footer').css("opacity", "1");
+          $('#new-post-btn').attr('class', 'btn btn-success btn-xs');
+          $('#new-post-btn').html('<i class="fa-solid fa-plus"></i> New Post');
+          if (newPostItem.hasClass('active'))
+            newPostItem.removeClass('active');
+          productCurrentItem.addClass('active');
+          setDefaultHeight();
+        } else {
+          $('.footer').css("visibility", "hidden");
+          $('.footer').css("opacity", "0");
+          $('#new-post-btn').attr('class', 'btn btn-danger btn-xs');
+          $('#new-post-btn').html('<i class="fa-solid fa-minus"></i> Cancel');
+          if (productCurrentItem.hasClass('active'))
+            productCurrentItem.removeClass('active');
+          newPostItem.addClass('active');
+          setNewPostHeight();
+        }
+      }
+
+      $('#new-post-btn').on('click', function (e) {
+        e.preventDefault();
+        posting = !posting;
+        renderPostCard();
+      })
+
+      $('#next').on('click', function (e) {
+        e.preventDefault();
+        var nextItem = productCurrentItem.next('.product');
+        productCurrentItem.removeClass('active');
+        if (nextItem.length) {
+          productCurrentItem = nextItem.addClass('active');
+        } else {
+          productCurrentItem = productItem.first().addClass('active');
+        }
+      });
+
+      function deletePost(id) {
+        console.log(id)
+        let xhr = new XMLHttpRequest()
+        let deleteurl = deletePostURL
+        xhr.open("POST", deleteurl, true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send("delete_id=" + id + "&csrfmiddlewaretoken=" + getCSRFToken());
+      }
+
+      function getCSRFToken() {
+        let cookies = document.cookie.split(";")
+        for (let i = 0; i < cookies.length; i++) {
+          let c = cookies[i].trim()
+          if (c.startsWith("csrftoken=")) {
+            return c.substring("csrftoken=".length, c.length)
+          }
+        }
+        return "unknown"
+      }
+  </script>
+  {% endblock %}

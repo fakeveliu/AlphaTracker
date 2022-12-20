@@ -1,0 +1,200 @@
+{% extends "alphatracker/base.html" %}
+
+{% block script_front %}
+{% load static %}
+<link href="{% static 'alphatracker/community.css' %}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block title %}
+Community - AlphaTracker
+{% endblock %}
+
+{% block content %}
+<div class="page-header" style="margin-top: 80px;">
+  <div id="community-page-name" class="page-name">
+    AlphaTracker Community
+  </div>
+</div>
+
+<div class="post-button">
+  <button id="new-post-btn" class="btn btn-success btn-xs" role="button">
+    <i class="fa-solid fa-plus"></i> New Post
+  </button>
+</div>
+
+<div class="card">
+  <div class="products">
+    {% if items.count == 0 %}
+    <div class="product" id="active-post">
+      <div style="padding-top:30%; font-size: 24px; color:#9b9b9b">NO POSTS HAVE BEEN MADE</div>
+    </div>
+    {% else %}
+    {% for item in items %}
+    {% if forloop.counter == active_idx %}
+    <div class="product" id="active-post">
+      {% else %}
+      <div class="product">
+        {% endif %}
+        <div class="title">{{ item.title }}</div>
+        <div class="info-container">
+          <div style="text-align:left">
+            {% if request.user.username == item.author.username %}
+            <a class="btn-link" style="padding:0" href="{% url 'my_collection' %}">
+              {{ request.user.username }}
+            </a>
+            {% else %}
+            <a class="btn-link" style="padding:0" href="{% url 'other_collection' item.author.id %}">
+              {{ item.author.username }}
+            </a>
+            {% endif %}
+          </div>
+          <div style="text-align:left">
+            <i class="fa-solid fa-calendar-days"></i>
+            {{ item.modified_time | date:"n/j/Y g:i A" }}
+          </div>
+          <div style="text-align:right">【{{ item.category }}】</div>
+
+          <div style="text-align:left">
+            {% if request.user not in item.liked_user.all %}
+            <a href="{% url 'like-post' item.id %}" role="button">
+              <i class="fa-regular fa-heart fa-xl"></i>
+              {{ item.liked_times }}
+            </a>
+            {% else %}
+            <a href=" {% url 'unlike-post' item.id %}" role="button">
+              <i class="fa-solid fa-heart fa-xl" style="color:red"></i>
+              {{ item.liked_times }}
+            </a>
+            {% endif %}
+          </div>
+          <div></div>
+          <div style="text-align:right; margin-right: 10px;">
+            {% if request.user.username == item.author.username %}
+            <a href="{% url 'delete-post' item.id %}" role="button">
+              <i class="fa-solid fa-trash-can fa-xl" style="color: grey;"></i>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        <div class="description">{{ item.content }}</div>
+      </div>
+      {% endfor %}
+      {% endif %}
+
+      <div id="new-post-card" class="post-card">
+        <div id="error" style="color:#d9534f; text-align:center">{{ error }}</div>
+        <form action="/submit_post" method="POST">
+          <div class="form-group">
+            <label for="Post-Title">Title</label>
+            <input type="text" class="form-control" name="title" id="Post-Title" style="width: 100%">
+          </div>
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select name="category" id="category">
+              <option class="option_choice" id="Blog" value="Blog">Blog</option>
+              <option class="option_choice" id="News" value="News">News</option>
+              <option class="option_choice" id="Insights" value="Insights">Insights</option>
+              <option class="option_choice" id="General" value="General">General</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="Post-Context">Content</label>
+            <textarea class="form-control" name="content" id="Post-Content"></textarea>
+          </div>
+          <div class="form-group">
+            <div class="center">
+              <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+          </div>
+          {% csrf_token %}
+        </form>
+      </div>
+    </div>
+
+    <div class="footer">
+      <a class="btn" id="prev" href="#"><i class="fa-solid fa-angles-left"></i></a>
+      <a class="btn" id="next" href="#"><i class="fa-solid fa-angles-right"></i></a>
+    </div>
+  </div>
+  {% endblock %}
+
+  {% block script %}
+  <script>
+
+    window.onload = topNavSetActive(3);
+
+    $(document).ready(function () {
+      var posting = false;
+
+      function setDefaultHeight() {
+        $('.products').css({ height: "450px" });
+      }
+      function setNewPostHeight() {
+        $('.products').css({ height: "500px" });
+      }
+
+      var productItem = $('.product');
+      // var productCurrentItem = productItem.last();
+      var productCurrentItem = productItem.filter('#active-post');
+      var newPostItem = $('#new-post-card');
+      var error = document.getElementById("error");
+      if (error.innerHTML == '') {
+        productCurrentItem.addClass('active');
+        setDefaultHeight();
+      } else { // new post has error, stay in new post state
+        posting = true;
+        renderPostCard();
+      }
+
+      function renderPostCard() {
+        if (!posting) {
+          $('.footer').css("visibility", "visible");
+          $('.footer').css("opacity", "1");
+          $('#new-post-btn').attr('class', 'btn btn-success btn-xs');
+          $('#new-post-btn').html('<i class="fa-solid fa-plus"></i> New Post');
+          if (newPostItem.hasClass('active'))
+            newPostItem.removeClass('active');
+          productCurrentItem.addClass('active');
+          setDefaultHeight();
+        } else {
+          $('.footer').css("visibility", "hidden");
+          $('.footer').css("opacity", "0");
+          $('#new-post-btn').attr('class', 'btn btn-danger btn-xs');
+          $('#new-post-btn').html('<i class="fa-solid fa-minus"></i> Cancel');
+          if (productCurrentItem.hasClass('active'))
+            productCurrentItem.removeClass('active');
+          newPostItem.addClass('active');
+          setNewPostHeight();
+        }
+      }
+
+      $('#new-post-btn').on('click', function (e) {
+        e.preventDefault();
+        posting = !posting;
+        renderPostCard();
+      })
+
+      $('#next').on('click', function (e) {
+        e.preventDefault();
+        var nextItem = productCurrentItem.next('.product');
+        productCurrentItem.removeClass('active');
+        if (nextItem.length) {
+          productCurrentItem = nextItem.addClass('active');
+        } else {
+          productCurrentItem = productItem.first().addClass('active');
+        }
+      });
+
+      $('#prev').on('click', function (e) {
+        e.preventDefault();
+        var prevItem = productCurrentItem.prev('.product');
+        productCurrentItem.removeClass('active');
+        if (prevItem.length) {
+          productCurrentItem = prevItem.addClass('active');
+        } else {
+          productCurrentItem = productItem.last().addClass('active');
+        }
+      });
+    });
+  </script>
+  {% endblock %}

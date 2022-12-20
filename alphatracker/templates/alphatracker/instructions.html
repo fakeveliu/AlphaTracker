@@ -1,0 +1,113 @@
+{% extends "alphatracker/base.html" %}
+{% block title %}
+Instructions - AlphaTracker
+{% endblock %}
+
+{% block header %}
+<div class="page-header" style="margin-top: 80px;">
+  <div id="global-page-name" class="page-name">
+    AlphaTracker Instructions
+  </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div >
+    <h3 style="text-align: center">Why AlphaTracker</h3>
+    <p style="margin: 30px; font-size: 18px;">Nowadays, startups could publish their cryptocurrencies to raise money.
+        However, it brings high risks for ordinary investors,
+        because it is difficult for people to distinguish a good company from a bad one,
+        especially the company in the early days.
+    </p>
+    <p style="margin: 30px; font-size: 18px;">
+        AlphaTracker is an investment info sharing and trading platform.
+        Based on the fact that "Top angel investors could follow potential companies in early days"
+        We filter and rank companies based on Twitter following relationship.
+    </p>
+    <p style="margin: 30px; font-size: 18px;">
+        It helps ordinary people to invest in potential companies in early days to earn a good return.
+        It also helps startup to raise money with its cryptocurrency.
+    </p>
+    <h3 style="text-align: center;">How to use</h3>
+    <h4  style="margin: 10px">View Companies</h4>
+    <p  style="margin: 30px; font-size: 18px;">
+        Click 'Companies' on the top, the default companies ranking is based on AlphaTracker's algorithm. Hover on the
+        company name and you could see the details and links of the company.
+    </p>
+    <p  style="margin: 30px; font-size: 18px;">
+        You could click the column name to rank by yourself, search specific company, or filter by date.
+    </p>
+    <p  style="margin: 30px; font-size: 18px;">
+        'Collected Times' reflects how many people collect this company into their collections.
+    </p>
+
+    <h4 style="margin: 10px">Fetch Companies</h4>
+    <p style="margin: 30px; font-size: 18px;">
+        For new startups, if you'd like to add your company and cryptocurrency to our platform, simply register to us
+        and type the company name in 'fetch', and click 'fetch', your company would be added and cryptocurrency could be
+        showed and traded.
+    </p>
+
+    <h4 style="margin: 10px">Collect/Uncollect</h4>
+    <p style="margin: 30px; font-size: 18px;">
+        Collect the company you like to your personal collection.
+    <p>
+    <p style="margin: 30px; font-size: 18px;">
+        You could set your collection visibility to
+        'Private/Public/Followers Only'. You could view others' collections based on their visibility setting.
+    </p>
+
+    <h4 style="margin: 10px">Trade</h4>
+    <p style="margin: 30px; font-size: 18px;">
+        Click trade of a company, you could see your total balance and shares held.
+    </p>
+    <p style="margin: 30px; font-size: 18px;">
+        The cryptocurrency price chart of the company is real-time.
+    </p>
+    <p style="margin: 30px; font-size: 18px;">
+    	You could buy(go long) or sell(go short) of a cryptocurrency in our platform.
+    </p>
+    <p style="margin: 30px; font-size: 18px;">
+    	You could see the transaction history of this company in trading page, or see all transactions history in your profile.
+    </p>
+    <h4 style="margin: 10px">Top Investors</h4>
+    <p style="margin: 30px; font-size: 18px;">
+        Click 'Investors' on the top, there are top investors and their info.
+    </p>
+    <p style="margin: 30px; font-size: 18px;">
+        The default order of investors is by their balance.
+    </p>
+     <p style="margin: 30px; font-size: 18px;">
+        You could view their collections and collect their collected companies to your collection.
+     </p>
+    <p style="margin: 30px; font-size: 18px;">
+        You could follow/unfollow these investors. Their updates will notify you in notification.
+    </p>
+
+    <h4 style="margin: 10px">Communities</h4>
+    <p style="margin: 30px; font-size: 18px;">
+       You could post Blog/News/Insights/General to the community, 'like/dislike' the post, or delete your post.
+    </p>
+    <h4 style="margin: 10px">Live Chat</h4>
+    <p style="margin: 30px; font-size: 18px;">
+       You could live chat anonymous with others.
+    </p>
+    <h4 style="margin: 10px">Notifications</h4>
+    <p style="margin: 30px; font-size: 18px;">
+        You could view your notifications by clicking the top notify icon.
+    </p>
+    <h4 style="margin: 10px">Profile</h4>
+    <p style="margin: 30px; font-size: 18px;">
+        Clicking your name on the top.
+    </p>
+    <p style="margin: 30px; font-size: 18px;">
+        You could manage your collections, following investors, followers, and transaction history in your profile.
+    </p>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+  window.onload = topNavSetActive(4);
+</script>
+{% endblock %}

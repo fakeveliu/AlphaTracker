@@ -1,0 +1,56 @@
+{% extends "alphatracker/base.html" %}
+
+{% block header %}
+<div>
+    <h1>Fetch Company</h1>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container theme-showcase" role="main">
+    <div class="page-header" style="margin-top: 80px;">
+        <div id="navbar" class="navbar-collapse collapse" style="float:left;">
+            <form action="{% url 'fetch-company' %}" method="post" id="fetch-company-form">
+                <label>Company to fetch:</label>
+                <input type="text" name="name" autofocus value="{{ name }}">
+                <input type="submit" value="fetch">
+                {% if error %}
+                <div class="error">
+                    {{error}}
+                </div>
+                {% endif %}
+                {% csrf_token %}
+            </form>
+            <form action="{% url 'save-fetch-company' %}" method="post" id="save-fetch-company-form">
+                <div>
+                    <label>Company Name</label>
+                    <input type="text" name="name" disabled="disabled" value="{{ name }}">
+                </div>
+                <div>
+                    <label>Company Account</label>
+                    <input type="text" name="account" disabled="disabled" value="{{ account }}">
+                </div>
+                <div>
+                    <label>Company URL</label>
+                    <input type="url" name="url" disabled="disabled" value="{{ url }}">
+                </div>
+                <div>
+                    <label>Company Establish Time</label>
+                    <input type="text" name="establish_time" disabled="disabled" value="{{ establish_time }}">
+                </div>
+                <div>
+                    <label>Company Size</label>
+                    <input type="number" name="size" disabled="disabled" value="{{ size }}">
+                </div>
+                {% if account %}
+                <div>
+                    Successful fetched and stored.
+                </div>
+                {% endif %}
+                <input type="submit" value="OK">
+                {% csrf_token %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

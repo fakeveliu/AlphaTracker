@@ -1,0 +1,62 @@
+{% extends "alphatracker/profile_base.html" %}
+
+{% block profile_script %}
+<link rel="stylesheet" type="text/css" href="../../static/alphatracker/transaction_card.css">
+{% endblock %}
+
+{% block subcontent %}
+  <div class="container theme-showcase" style="margin-top: 80px;">
+    <div class="page-name">
+      My Transaction
+    </div>
+    <div class="grid-container">
+        {% for transaction_record in transaction_records %}
+            <div class="card">
+              <h1><a href=http://{{ item.url }}>{{ transaction_record.name }}</a></h1>
+              <p class="title">Total Shares Held: {{ transaction_record.shares_held }}</p>
+{#              <p>Establish Time: {{ transaction_record.establish_time | date:"m/d/Y" }}</p>#}
+              <p>Size: {{ transaction_record.size }}</p>
+              <p>Created By:
+                  {% if transaction_record.created_by %}
+                    {{ transaction_record.created_by }}
+                    {% else %}
+                    AlphaTracker
+                  {% endif %}
+              </p>
+{#              <p>Modified Time: {{ transaction_record.modified_time | date:"m/d/Y" }}</p>#}
+              <p>Collected Times: {{ transaction_record.collected_times }}</p>
+              <p class="title">Transaction details</p>
+                <div class="col-md-6" style="width: 1200px;">
+                <table class="table table-striped" id="table">
+                  <thead>
+                    <tr>
+                      <th onclick="sortTable('transaction_time')">Transaction Time</th>
+                      <th onclick="sortTable('shares_held')">Shares Held</th>
+                    </tr>
+                  </thead>
+
+                    <tbody id="body">
+                      {% for transaction_table_list_item in transaction_record.transaction_table_list %}
+                      <tr>
+                        <td>{{ transaction_table_list_item.transaction_time | date:"m/d/Y" }}</td>
+                        <td>{{ transaction_table_list_item.shares_held }}</td>
+                      </tr>
+                      {% endfor %}
+                  </tbody>
+                </table>
+                </div>
+                <a href="{% url 'market-company' transaction_record.company_id %}" class="btn btn-info btn-xs" role="button">Trade</a>
+          </div>
+    {% endfor %}
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+  window.onload = () => {
+    topNavSetActive(5)
+    setActive(3)
+  }
+</script>
+{% endblock %}
+

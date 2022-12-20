@@ -1,0 +1,118 @@
+{% extends "alphatracker/profile_base.html" %}
+
+{% block subcontent %}
+  <div class="container theme-showcase" style="margin-top: 80px;">
+    <div class="page-name">
+      My Collection
+    </div>
+    <div id="navbar" class="navbar-collapse collapse" style="float:left;">
+      <div class="navbar-form">
+        <div class="form-group">
+          <input id="search-input" onkeyup="searchTable()" name="search" type="text" placeholder="Search for names..."
+            class="form-control">
+        </div>
+        <div class="form-group">
+          <input id="filter-from" class="filter form-control" type="date" placeholder="From..." style="color:#9b9b9b">
+          <input id="filter-to" class="filter form-control" type="date" placeholder="To..." style="color:#9b9b9b">
+        </div>
+        <div class="form-group">
+          <form action="changevis" method="POST">
+            <label for="visibility">Visibility:</label>
+            <select name="visibility" id="visibility">
+              <option class="option_choice" id="Private" value="Private">Private</option>
+              <option class="option_choice" id="Followers Only" value="Followers Only">Followers Only
+              </option>
+              <option class="option_choice" id="Public" value="Public">Public</option>
+            </select>
+            <input type="submit" value="Save" class="btn btn-success">
+            {% csrf_token %}
+          </form>
+        </div>
+      </div>
+    </div>
+    <!--table-->
+    <div class="row">
+      <div class="col-md-6" style="width: 1200px;">
+        <table class="table table-striped" id="table">
+          <thead>
+            <tr>
+              <th onclick="sortTable('name')">Name</th>
+              <th onclick="sortTable('est')">Establish Time</th>
+              <th onclick="sortTable('size')">Size</th>
+              <th onclick="sortTable('creator')">Created By</th>
+              <th onclick="sortTable('modified')">Modified Time</th>
+              <th onclick="sortTable('collected')">Collected Times</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          
+            <tbody id="body">
+              {% for item in profile.collection.all %}
+              <tr>
+                <td><a href=http://{{ item.url }}>{{ item.name }}</a></td>
+                <td>{{ item.establish_time | date:"m/d/Y" }}</td>
+                <td>{{ item.size }}</td>
+                {% if item.created_by %}
+                <td>{{ item.created_by }}</td>
+                {% else %}
+                <td>AlphaTracker</td>
+                {% endif %}
+                <td>{{ item.modified_time | date:"m/d/Y H:i"}}</td>
+                <td>{{ item.collected_times }}</td>
+                <td>
+                    <a href="{% url 'uncollect-action' item.id %}" class="btn btn-danger btn-xs" role="button">Uncollect</a>
+                </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block script %}
+<script>
+  window.onload = function add_selected() {
+    var cur_status = "{{ profile.visibility }}"
+    var tag = document.getElementById(cur_status)
+    tag.setAttribute("selected", "")
+
+    topNavSetActive(5)
+    setActive(0)
+  }
+
+  $(".filter").on("change", function () {
+    var from = $("#filter-from").val()
+    var to = $("#filter-to").val()
+    // console.log(from, to)
+    if (!from && !to) {
+      return
+    }
+    from = modify_date(from)
+    to = modify_date(to)
+    var table = document.getElementById("table")
+    var rows = table.rows
+    let tr = table.getElementsByTagName("tr")
+    for (i = 1; i < (rows.length); i++) {
+      var x = rows[i].getElementsByTagName("TD")[1]
+      date = modify_date(x.innerHTML)
+      console.log(from)
+      console.log(date)
+      var show = true
+      if (from && date < from) {
+        show = false
+      }
+      if (to && date > to) {
+        show = false
+      }
+      if (show == true) {
+        rows[i].style.display = ""
+      }
+      else {
+        rows[i].style.display = "none"
+      }
+    }
+  })
+</script>
+{% endblock %}

@@ -1,0 +1,19 @@
+*.pyc
+db.sqlite3
+migrations
+.DS_Store
+venv
+my_env
+.idea
+*.pptx
+*.pdf
+collected_static
+
+# Default ignored files
+/shelf/
+/workspace.xml
+# Editor-based HTTP Client requests
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml

@@ -1,0 +1,51 @@
+{% extends "alphatracker/profile_base.html" %}
+
+{% block profile_script %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="../../static/alphatracker/my_following.css">
+{% endblock %}
+
+{% block subcontent %}
+<div class="container theme-showcase" style="margin-top: 80px;">
+  <div class="page-name">
+    Following
+  </div>
+  <div class="grid-container">
+      {% for item in profile.following.all %}
+          <div class="card">
+            <img id="id_user_picture" src="{{ item.profile.image }}" alt="Profile Image" style="border-radius:50%; width:40%;">
+            <h1><a hred="{% url 'other_collection' item.id %}">{{ item.first_name }} {{ item.last_name }}</a></h1>
+            <p class="title">Visibility: {{ item.profile.visibility }}</p>
+            <p>Email: {{ item.email }}</p>
+            <p>Date joined: {{ item.date_joined | date:"m/d/Y" }}</p>
+            <p>Following: {{ item.profile.following.count }}</p>
+            <p>Followers: {{ item.profile.follower.count }}</p>
+{#                following list: #}
+{#                {% for item2 in item.profile.following.all %}#}
+{#                <a class="btn btn-link" style="padding:0" href="{% url 'other_collection' item2.id %}">#}
+{#                    {{ item2.username }}#}
+{#                </a>#}
+{#                {% endfor %}#}
+              <div>
+                  <a><i class="fa fa-dribbble"></i></a>
+                  <a><i class="fa fa-twitter"></i></a>
+                  <a><i class="fa fa-linkedin"></i></a>
+                  <a><i class="fa fa-facebook"></i></a>
+              </div>
+              <div>
+                <a href="{% url 'other_collection' item.id %}" class="btn btn-info btn-xs" role="button">View</a>
+                <a href="{% url 'unfollow' item.id %}" class="btn btn-danger btn-xs" role="button">Unfollow</a>
+              </div>
+          </div>
+      {%  endfor %}
+  </div>
+{% endblock %}
+
+{% block script %}
+<script>
+  window.onload = () => {
+    topNavSetActive(5);
+    setActive(1);
+  }
+</script>
+{% endblock %}
